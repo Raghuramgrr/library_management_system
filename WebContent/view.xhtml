@@ -1,0 +1,170 @@
+<?xml-stylesheet href="xsltforms-1.0RC/xsltforms/xsltforms.xsl" type="text/xsl"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:xf="http://www.w3.org/2002/xforms"
+	xmlns:ev="http://www.w3.org/2001/xml-events">
+<head>
+<title>Library Management System</title>
+<style type="text/css">
+@
+namespace xf url ("http: //www.w3.org /2002/xforms");
+  html, body {
+	height: 100%;
+}
+
+html {
+	display: table;
+	margin: auto;
+}
+
+body {
+	vertical-align: middle;
+}
+
+input {
+	width: 320px;
+}
+
+.table-header {
+	display: table-row;
+}
+
+.table-body {
+	display: table-row;
+}
+
+.column-header {
+	width: 200px;
+	display: table-cell;
+	text-align: center;
+	color: white;
+	background-color: gray;
+	font-weight: bold;
+}
+
+.book-column {
+	width: 200px;
+	text-align: center;
+	display: table-cell;
+	color: black;
+	font-weight: bold;
+}
+</style>
+<xf:model>
+	<xf:instance id="book">
+		<data xmlns="">
+		<title />
+		</data>
+	</xf:instance>
+	<xf:instance xmlns="" id="books">
+		<books />
+	</xf:instance>
+	<xf:instance id="URL-container" xmlns="">
+		<values />
+	</xf:instance>
+	<xf:bind nodeset="title" required="true()" type="xsd:string" />
+	<xf:submission id="view" method="get" action="view"
+		ref="instance('book')" replace="instance" instance="books">
+		<xf:action ev:event="xforms-submit-error">
+			<xf:message>No results</xf:message>
+		</xf:action>		
+	</xf:submission>
+	<xf:submission id="borrow" method="get" action="borrow"
+		ref="instance('URL-container')" replace="instance" instance="books">
+		<xf:action ev:event="xforms-submit-done">
+			<xf:message>Borrow book request processed</xf:message>
+		</xf:action>
+		<xf:action ev:event="xforms-submit-error">
+			<xf:message>Borrow book request not processed</xf:message>
+		</xf:action>
+	</xf:submission>
+	<xf:submission id="return" method="get" action="return"
+		ref="instance('URL-container')" replace="instance" instance="books">
+		<xf:action ev:event="xforms-submit-done">
+			<xf:message>Return book request processed</xf:message>
+		</xf:action>
+		<xf:action ev:event="xforms-submit-error">
+			<xf:message>Return book request not processed</xf:message>
+		</xf:action>
+	</xf:submission>
+</xf:model>
+</head>
+<body>
+	<div align="center">
+		<h1>Library - View/Borrow/Return Book</h1>
+		<hr />
+		<br />
+
+		<div align="center">
+			<a href="http://localhost:9999/library/home.xhtml">Back to Home</a><br />
+		</div>
+
+		<xf:input ref="title">
+			<xf:label>Title: </xf:label>
+		</xf:input>
+		<br />
+
+		<xf:trigger>
+			<xf:label>Submit</xf:label>
+			<xf:action ev:event="DOMActivate">
+				<xf:send submission="view" />
+			</xf:action>
+		</xf:trigger>
+		<br />
+		<div class="table-header">
+			<div class="column-header">Book Id</div>
+			<div class="column-header">Title</div>
+			<div class="column-header">Total Copies</div>
+			<div class="column-header">Copies Left</div>
+			<div class="column-header">Borrow</div>
+			<div class="column-header">Return</div>
+		</div>
+		<xf:repeat nodeset="instance('books')/book" id="book-repeat">
+			<br />
+			<div class="table-body">
+				<div class="book-column">
+					<xf:output ref="id" />
+				</div>
+				<div class="book-column">
+					<xf:output ref="title" />
+				</div>
+				<div class="book-column">
+					<xf:output ref="copies" />
+				</div>
+				<div class="book-column">
+					<xf:output ref="available" />
+				</div>
+				<div class="book-column">
+					<xf:group ref=".[available>0]">
+						<xf:trigger submission="replace-form-with">
+							<xf:label>Borrow</xf:label>
+							<xf:action ev:event="DOMActivate">
+								<xf:setvalue ref="instance('URL-container')"
+									value="concat('id&#61;', instance('books')/book[index('book-repeat')]/id, '&#38;title&#61;' , instance('book')/title)" />;
+							<xf:send submission="borrow" />
+							</xf:action>
+						</xf:trigger>
+					</xf:group>
+					<xf:group ref=".[available=0]">
+					Not available
+					</xf:group>
+				</div>
+				<div class="book-column">
+					<xf:group ref=".[copies!=available]">
+						<xf:trigger submission="replace-form-with">
+							<xf:label>Return</xf:label>
+							<xf:action ev:event="DOMActivate">
+								<xf:setvalue ref="instance('URL-container')"
+									value="concat('id&#61;', instance('books')/book[index('book-repeat')]/id, '&#38;title&#61;' , instance('book')/title)" />;
+							<xf:send submission="return" />
+							</xf:action>
+						</xf:trigger>
+					</xf:group>
+					<xf:group ref=".[copies=available]">
+					No book borrowed
+					</xf:group>
+				</div>
+			</div>
+		</xf:repeat>
+	</div>
+</body>
+</html>

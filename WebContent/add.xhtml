@@ -1,0 +1,98 @@
+
+<?xml-stylesheet href="xsltforms-1.0RC/xsltforms/xsltforms.xsl" type="text/xsl"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:xforms="http://www.w3.org/2002/01/xforms"
+	xmlns:xf="http://www.w3.org/2002/xforms"
+	xmlns:ev="http://www.w3.org/2001/xml-events">
+<head>
+<title>Library Management System</title>
+<style type="text/css">
+@
+namespace xf url ("http: //www.w3.org /2002/xforms");
+   html, body {
+	height: 100%;
+}
+
+html {
+	display: table;
+	margin: auto;
+}
+
+body {
+	vertical-align: middle;
+}
+
+label {
+	float: left;
+	width: 120px;
+}
+
+input {
+	width: 320px;
+}
+</style>
+<xf:model>
+	<xf:instance id="book">
+		<data xmlns=""> <id />
+		<title />
+		<copies /></data>
+	</xf:instance>
+	<xf:bind nodeset="id" required="true()" type="xsd:nonNegativeInteger" />
+	<xf:bind nodeset="title" required="true()" type="xsd:string" />
+	<xf:bind nodeset="copies" required="true()"
+		type="xsd:nonNegativeInteger" />
+	<xf:submission id="add" method="post" action="add"
+		ref="instance('book')" replace="none">
+		<xf:action ev:event="xforms-submit-done">
+			<xf:message>Book added successfully</xf:message>
+			<xf:setvalue ref="instance('book')/id" value="''" />
+			<xf:setvalue ref="instance('book')/title" value="''" />
+			<xf:setvalue ref="instance('book')/copies" value="''" />
+		</xf:action>
+		<xf:action ev:event="xforms-submit-error">
+			<xf:message>Book addition failed</xf:message>
+		</xf:action>
+	</xf:submission>
+</xf:model>
+</head>
+<body>
+	<div align="center">
+		<h1>Library - Add Book</h1>
+		<hr />
+		<br />
+	</div>
+
+	<div align="center">
+		<a href="http://localhost:9999/library/home.xhtml">Back to Home</a><br />
+		<br />
+	</div>
+
+	<xf:input ref="id">
+		<xf:label>Book ID: </xf:label>
+		<xf:hint>Must be positve</xf:hint>
+	</xf:input>
+
+	<br />
+
+	<xf:input ref="title">
+		<xf:label>Title: </xf:label>
+	</xf:input>
+
+	<br />
+
+	<xf:input ref="copies">
+		<xf:label>Total Copies: </xf:label>
+		<xf:hint>Must be positve</xf:hint>
+	</xf:input>
+
+	<br />
+
+	<div align="center">
+		<xf:submit submission="add">
+			<xf:label>Add</xf:label>
+		</xf:submit>
+	</div>
+
+</body>
+
+</html>
