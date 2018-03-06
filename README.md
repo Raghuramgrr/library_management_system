@@ -8,10 +8,11 @@ An application to manage the books in library
 
 ### Installation and Configuration
 
-* Persistence: MySQL
-* url: jdbc:mysql://localhost:3306/fuji
-* user name jdbc:root
-* password: jdbc:root
+* Persistence: MySQL database
+* url: "jdbc:mysql://localhost:3306/fuji"
+* DB name: fuji
+* user name: "root"
+* password: "root"
 
 ### Steps to run the app:
 1. Clone the repository into a folder
